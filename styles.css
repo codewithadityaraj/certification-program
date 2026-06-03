@@ -694,3 +694,180 @@ html.dark .leader-slim-track {
     gap: 28px;
   }
 }
+
+/* ── LEADERSHIP BANNER (GM & TL) ─────────────────── */
+.leadership-banner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .leadership-banner {
+    grid-template-columns: 1fr;
+  }
+}
+
+.leader-info-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.leader-info-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  border-radius: var(--radius);
+}
+
+.gm-card::after {
+  background: radial-gradient(ellipse at top left, rgba(79, 70, 229, 0.06) 0%, transparent 70%);
+}
+
+.tl-card::after {
+  background: radial-gradient(ellipse at top left, rgba(124, 58, 237, 0.06) 0%, transparent 70%);
+}
+
+.leader-info-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.leader-info-card:hover::after {
+  opacity: 1;
+}
+
+/* Accent bar on the left edge */
+.gm-card {
+  border-left: 3px solid var(--accent);
+}
+
+.tl-card {
+  border-left: 3px solid var(--purple);
+}
+
+/* Role header row */
+.leader-info-role {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.leader-role-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.gm-dot {
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(79, 70, 229, 0.5);
+}
+
+.tl-dot {
+  background: var(--purple);
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.5);
+}
+
+.leader-role-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Names container — 2-per-row grid */
+.leader-info-names {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
+}
+
+/* Individual name chip — grid cell */
+.leader-name-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.1px;
+  padding: 7px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+  min-width: 0;
+}
+
+.leader-name-chip:hover {
+  border-color: var(--accent);
+  background: var(--surface-hover);
+}
+
+/* Avatar initials bubble */
+.leader-name-chip::before {
+  content: attr(data-initials);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 800;
+  flex-shrink: 0;
+  letter-spacing: 0;
+}
+
+/* Name text: truncate if too long */
+.leader-name-chip span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.gm-chip::before {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.tl-chip::before {
+  background: var(--purple-light);
+  color: var(--purple);
+}
+
+/* Empty / loading state — span both columns */
+.leader-name-chip.placeholder {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 13px;
+  grid-column: 1 / -1;
+  background: transparent;
+  border-color: transparent;
+}
+
+.leader-name-chip.placeholder::before {
+  content: none;
+}

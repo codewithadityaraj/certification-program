@@ -378,6 +378,57 @@ function renderLeadershipList(chartKey) {
   renderProgressTable(chartKey);
 }
 
+/* ── LEADERSHIP BANNER RENDER ────────────────────── */
+function getInitials(name) {
+  const words = name.trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return '?';
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function renderLeadershipBanner() {
+  const gmContainer = document.getElementById('banner-gm-names');
+  const tlContainer = document.getElementById('banner-tl-names');
+  if (!gmContainer || !tlContainer) return;
+
+  // Derive unique GM names from gmCohort rows filtered by active program
+  const gmRows = filterData(datasets.gmCohort, { 'Program Name': state.activeProgram });
+  const gmNames = [];
+  gmRows.forEach((r) => {
+    const v = safeString(firstDefined(r, ['GM Name', 'GM NAME', 'GM']));
+    if (v && !gmNames.includes(v)) gmNames.push(v);
+  });
+
+  // Derive unique TL names from tlCohort rows filtered by active program
+  const tlRows = filterData(datasets.tlCohort, { 'Program Name': state.activeProgram });
+  const tlNames = [];
+  tlRows.forEach((r) => {
+    const v = safeString(firstDefined(r, ['TL Name', 'TL NAME']));
+    if (v && !tlNames.includes(v)) tlNames.push(v);
+  });
+
+  function buildChips(names, chipClass) {
+    if (!names.length) {
+      return `<span class="leader-name-chip placeholder ${chipClass}">Not assigned</span>`;
+    }
+    return names.map((name) => {
+      const initials = getInitials(name);
+      return `<span class="leader-name-chip ${chipClass}" data-initials="${escapeHtml(initials)}"><span>${escapeHtml(name)}</span></span>`;
+    }).join('');
+  }
+
+  gmContainer.innerHTML = buildChips(gmNames, 'gm-chip');
+  tlContainer.innerHTML = buildChips(tlNames, 'tl-chip');
+}
+
 function setLoadingView() {
   ['card-fc-tgt', 'card-fc-ach', 'card-fc-pct', 'card-fc-revtgt', 'card-fc-revach', 'card-fc-revpct',
     'card-fm-tgt', 'card-fm-ach', 'card-fm-pct', 'card-fm-revtgt', 'card-fm-revach', 'card-fm-revpct']
@@ -410,6 +461,7 @@ function updateDashboard() {
   renderLeadershipList('tl-fm');
   renderLeadershipList('gm-fc');
   renderLeadershipList('gm-fm');
+  renderLeadershipBanner();
 }
 
 async function initializeDashboard() {
