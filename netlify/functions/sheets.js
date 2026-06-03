@@ -4,7 +4,9 @@ const SHEET_URLS = {
   tlCohort: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBGYVm4WeDri55fxkXbFKVPRw4f7oIDtM3SySzIhh8MdkVU1-h2G-FoZwDvzdhJPcWlQPiUGSNNKmn/pub?gid=1379419762&single=true&output=csv',
   tlMonthly: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBGYVm4WeDri55fxkXbFKVPRw4f7oIDtM3SySzIhh8MdkVU1-h2G-FoZwDvzdhJPcWlQPiUGSNNKmn/pub?gid=1253162755&single=true&output=csv',
   gmCohort: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBGYVm4WeDri55fxkXbFKVPRw4f7oIDtM3SySzIhh8MdkVU1-h2G-FoZwDvzdhJPcWlQPiUGSNNKmn/pub?gid=2126600034&single=true&output=csv',
-  gmMonthly: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBGYVm4WeDri55fxkXbFKVPRw4f7oIDtM3SySzIhh8MdkVU1-h2G-FoZwDvzdhJPcWlQPiUGSNNKmn/pub?gid=1449154150&single=true&output=csv'
+  gmMonthly: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBGYVm4WeDri55fxkXbFKVPRw4f7oIDtM3SySzIhh8MdkVU1-h2G-FoZwDvzdhJPcWlQPiUGSNNKmn/pub?gid=1449154150&single=true&output=csv',
+  bdaCohort: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBGYVm4WeDri55fxkXbFKVPRw4f7oIDtM3SySzIhh8MdkVU1-h2G-FoZwDvzdhJPcWlQPiUGSNNKmn/pub?gid=1772864628&single=true&output=csv',
+  bdaMonthly: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBGYVm4WeDri55fxkXbFKVPRw4f7oIDtM3SySzIhh8MdkVU1-h2G-FoZwDvzdhJPcWlQPiUGSNNKmn/pub?gid=1803907168&single=true&output=csv'
 };
 
 exports.handler = async (event) => {

@@ -11,7 +11,9 @@ const SHEET_URLS = {
   tlCohort: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBGYVm4WeDri55fxkXbFKVPRw4f7oIDtM3SySzIhh8MdkVU1-h2G-FoZwDvzdhJPcWlQPiUGSNNKmn/pub?gid=1379419762&single=true&output=csv',
   tlMonthly: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBGYVm4WeDri55fxkXbFKVPRw4f7oIDtM3SySzIhh8MdkVU1-h2G-FoZwDvzdhJPcWlQPiUGSNNKmn/pub?gid=1253162755&single=true&output=csv',
   gmCohort: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBGYVm4WeDri55fxkXbFKVPRw4f7oIDtM3SySzIhh8MdkVU1-h2G-FoZwDvzdhJPcWlQPiUGSNNKmn/pub?gid=2126600034&single=true&output=csv',
-  gmMonthly: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBGYVm4WeDri55fxkXbFKVPRw4f7oIDtM3SySzIhh8MdkVU1-h2G-FoZwDvzdhJPcWlQPiUGSNNKmn/pub?gid=1449154150&single=true&output=csv'
+  gmMonthly: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBGYVm4WeDri55fxkXbFKVPRw4f7oIDtM3SySzIhh8MdkVU1-h2G-FoZwDvzdhJPcWlQPiUGSNNKmn/pub?gid=1449154150&single=true&output=csv',
+  bdaCohort: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBGYVm4WeDri55fxkXbFKVPRw4f7oIDtM3SySzIhh8MdkVU1-h2G-FoZwDvzdhJPcWlQPiUGSNNKmn/pub?gid=1772864628&single=true&output=csv',
+  bdaMonthly: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRBGYVm4WeDri55fxkXbFKVPRw4f7oIDtM3SySzIhh8MdkVU1-h2G-FoZwDvzdhJPcWlQPiUGSNNKmn/pub?gid=1803907168&single=true&output=csv'
 };
 const DATA_SOURCES = {
   fullPaymentCohort: 'fullPaymentCohort',
@@ -19,7 +21,9 @@ const DATA_SOURCES = {
   tlCohort: 'tlCohort',
   tlMonthly: 'tlMonthly',
   gmCohort: 'gmCohort',
-  gmMonthly: 'gmMonthly'
+  gmMonthly: 'gmMonthly',
+  bdaCohort: 'bdaCohort',
+  bdaMonthly: 'bdaMonthly'
 };
 
 const csvCache = new Map();
@@ -29,10 +33,16 @@ const state = {
   activeProgram: 'ALL',
   sectionCohortFilters: { fc: 'ALL' },
   sectionMonthFilters: { fm: 'ALL' },
-  leaderFilters: { 'tl-fc': 'ALL', 'tl-fm': 'ALL', 'gm-fc': 'ALL', 'gm-fm': 'ALL' },
-  leaderCohortFilters: { 'tl-fc': 'ALL', 'gm-fc': 'ALL' },
-  leaderMonthFilters: { 'tl-fm': 'ALL', 'gm-fm': 'ALL' },
-  leaderSorts: { 'tl-fc': 'ach-desc', 'tl-fm': 'ach-desc', 'gm-fc': 'ach-desc', 'gm-fm': 'ach-desc' }
+  leaderFilters: {
+    'tl-fc': 'ALL', 'tl-fm': 'ALL', 'gm-fc': 'ALL', 'gm-fm': 'ALL',
+    'bda-fc': 'ALL', 'bda-fm': 'ALL'
+  },
+  leaderCohortFilters: { 'tl-fc': 'ALL', 'gm-fc': 'ALL', 'bda-fc': 'ALL' },
+  leaderMonthFilters: { 'tl-fm': 'ALL', 'gm-fm': 'ALL', 'bda-fm': 'ALL' },
+  leaderSorts: {
+    'tl-fc': 'ach-desc', 'tl-fm': 'ach-desc', 'gm-fc': 'ach-desc', 'gm-fm': 'ach-desc',
+    'bda-fc': 'ach-desc', 'bda-fm': 'ach-desc'
+  }
 };
 
 const datasets = {
@@ -41,7 +51,84 @@ const datasets = {
   tlCohort: [],
   tlMonthly: [],
   gmCohort: [],
-  gmMonthly: []
+  gmMonthly: [],
+  bdaCohort: [],
+  bdaMonthly: []
+};
+
+const CHART_META = {
+  'tl-fc': {
+    dataset: 'tlCohort',
+    isCohort: true,
+    role: ['TL Name', 'TL NAME'],
+    table: {
+      name: ['TL Name', 'TL NAME'],
+      target: 'Cohort TL Full Payment Target',
+      achieved: 'Cohort TL Full Payment Achieved',
+      progress: 'Cohort TL Full Payment Achievement %',
+      colorClass: 'color-fp-cohort'
+    }
+  },
+  'tl-fm': {
+    dataset: 'tlMonthly',
+    isCohort: false,
+    role: ['TL Name', 'TL NAME'],
+    table: {
+      name: ['TL Name', 'TL NAME'],
+      target: 'Month TL Full Payment Target',
+      achieved: 'Month TL Full Payment Achieved',
+      progress: 'Month TL Full Payment Achievement %',
+      colorClass: 'color-fp-monthly'
+    }
+  },
+  'gm-fc': {
+    dataset: 'gmCohort',
+    isCohort: true,
+    role: ['GM Name', 'GM NAME', 'GM'],
+    table: {
+      name: ['GM Name', 'GM NAME', 'GM'],
+      target: 'GM Cohort Full Payment Target',
+      achieved: 'GM Cohort Full Payment Achieved',
+      progress: 'GM Cohort Full Payment Achievement %',
+      colorClass: 'color-fp-cohort'
+    }
+  },
+  'gm-fm': {
+    dataset: 'gmMonthly',
+    isCohort: false,
+    role: ['GM Name', 'GM NAME', 'GM'],
+    table: {
+      name: ['GM Name', 'GM NAME', 'GM'],
+      target: 'GM Month Full Payment Target',
+      achieved: 'GM Month Full Payment Achieved',
+      progress: 'GM Month Full Payment Achievement %',
+      colorClass: 'color-fp-monthly'
+    }
+  },
+  'bda-fc': {
+    dataset: 'bdaCohort',
+    isCohort: true,
+    role: ['BDA'],
+    table: {
+      name: ['BDA'],
+      target: 'BDA Cohort Full Payment Target',
+      achieved: 'BDA Cohort Full Payment Achieved',
+      progress: 'BDA Cohort Full Payment Achievement %',
+      colorClass: 'color-fp-cohort'
+    }
+  },
+  'bda-fm': {
+    dataset: 'bdaMonthly',
+    isCohort: false,
+    role: ['BDA'],
+    table: {
+      name: ['BDA'],
+      target: 'BDA Month Full Payment Target',
+      achieved: 'BDA Month Full Payment Achieved',
+      progress: 'BDA Month Full Payment Achievement %',
+      colorClass: 'color-fp-monthly'
+    }
+  }
 };
 
 function fmt(n) { return Math.round(Number(n) || 0).toLocaleString('en-IN'); }
@@ -139,6 +226,12 @@ function filterData(rows, conditions) {
   }));
 }
 
+function filterLeaderRows(rows, roleKeys, value) {
+  if (value === 'ALL') return rows;
+  const keys = Array.isArray(roleKeys) ? roleKeys : [roleKeys];
+  return rows.filter((row) => safeString(firstDefined(row, keys)) === safeString(value));
+}
+
 function populateDropdown(selectId, values, allLabel) {
   const select = document.getElementById(selectId);
   if (!select) return;
@@ -153,6 +246,8 @@ function populateDropdown(selectId, values, allLabel) {
 function getAllPrograms() {
   const all = uniqueValues(datasets.fullPaymentCohort, 'Program Name')
     .concat(uniqueValues(datasets.fullPaymentMonthly, 'Program Name'))
+    .concat(uniqueValues(datasets.bdaCohort, 'Program Name'))
+    .concat(uniqueValues(datasets.bdaMonthly, 'Program Name'))
     .filter((v, i, arr) => arr.indexOf(v) === i);
   return all.sort((a, b) => a.localeCompare(b));
 }
@@ -249,62 +344,27 @@ function renderTableRows(containerId, rows, config) {
 }
 
 function renderProgressTable(chartKey) {
-  const role = chartKey.startsWith('tl') ? ['TL Name', 'TL NAME'] : ['GM Name', 'GM NAME', 'GM'];
-  const isCohort = chartKey.endsWith('fc');
-  const sourceRows = chartKey === 'tl-fc' ? datasets.tlCohort
-    : chartKey === 'tl-fm' ? datasets.tlMonthly
-      : chartKey === 'gm-fc' ? datasets.gmCohort
-        : datasets.gmMonthly;
+  const meta = CHART_META[chartKey];
+  if (!meta) return;
 
+  const sourceRows = datasets[meta.dataset] || [];
   const base = filterData(sourceRows, { 'Program Name': state.activeProgram });
-  const withPeriod = isCohort
+  const withPeriod = meta.isCohort
     ? filterData(base, { 'Cohort Name': state.leaderCohortFilters[chartKey] })
     : filterData(base, { Month: state.leaderMonthFilters[chartKey] });
-  const withLeader = filterData(withPeriod, { [role]: state.leaderFilters[chartKey] });
+  const withLeader = filterLeaderRows(withPeriod, meta.role, state.leaderFilters[chartKey]);
 
   const sortVal = state.leaderSorts[chartKey];
-  const achKey = isCohort
-    ? (role === 'TL Name' ? 'Cohort TL Full Payment Achieved' : 'GM Cohort Full Payment Achieved')
-    : (role === 'TL Name' ? 'Month TL Full Payment Achieved' : 'GM Month Full Payment Achieved');
+  const achKey = meta.table.achieved;
   withLeader.sort((a, b) => {
-    if (sortVal === 'name-asc') return safeString(firstDefined(a, role)).localeCompare(safeString(firstDefined(b, role)));
+    if (sortVal === 'name-asc') {
+      return safeString(firstDefined(a, meta.role)).localeCompare(safeString(firstDefined(b, meta.role)));
+    }
     if (sortVal === 'ach-asc') return toNumber(firstDefined(a, achKey)) - toNumber(firstDefined(b, achKey));
     return toNumber(firstDefined(b, achKey)) - toNumber(firstDefined(a, achKey));
   });
 
-  const config = isCohort
-    ? (chartKey.startsWith('tl')
-      ? {
-          name: ['TL Name', 'TL NAME'],
-          target: 'Cohort TL Full Payment Target',
-          achieved: 'Cohort TL Full Payment Achieved',
-          progress: 'Cohort TL Full Payment Achievement %',
-          colorClass: 'color-fp-cohort'
-        }
-      : {
-          name: ['GM Name', 'GM NAME', 'GM'],
-          target: 'GM Cohort Full Payment Target',
-          achieved: 'GM Cohort Full Payment Achieved',
-          progress: 'GM Cohort Full Payment Achievement %',
-          colorClass: 'color-fp-cohort'
-        })
-    : (chartKey.startsWith('tl')
-      ? {
-          name: ['TL Name', 'TL NAME'],
-          target: 'Month TL Full Payment Target',
-          achieved: 'Month TL Full Payment Achieved',
-          progress: 'Month TL Full Payment Achievement %',
-          colorClass: 'color-fp-monthly'
-        }
-      : {
-          name: ['GM Name', 'GM NAME', 'GM'],
-          target: 'GM Month Full Payment Target',
-          achieved: 'GM Month Full Payment Achieved',
-          progress: 'GM Month Full Payment Achievement %',
-          colorClass: 'color-fp-monthly'
-        });
-
-  renderTableRows(`list-${chartKey}`, withLeader, config);
+  renderTableRows(`list-${chartKey}`, withLeader, meta.table);
 }
 
 function renderCards(prefix) {
@@ -344,34 +404,46 @@ function updateDependentDropdowns() {
   const tlMonthRows = filterData(datasets.tlMonthly, { 'Program Name': state.activeProgram });
   const gmCohortRows = filterData(datasets.gmCohort, { 'Program Name': state.activeProgram });
   const gmMonthRows = filterData(datasets.gmMonthly, { 'Program Name': state.activeProgram });
+  const bdaCohortRows = filterData(datasets.bdaCohort, { 'Program Name': state.activeProgram });
+  const bdaMonthRows = filterData(datasets.bdaMonthly, { 'Program Name': state.activeProgram });
 
   populateDropdown('select-sec-fc-cohort', uniqueValues(cohortRows, 'Cohort Name'), 'All Cohorts');
   populateDropdown('select-sec-fm-month', uniqueValues(monthlyRows, 'Month'), 'All Months');
   populateDropdown('select-tl-fc-cohort', uniqueValues(tlCohortRows, 'Cohort Name'), 'All Cohorts');
   populateDropdown('select-gm-fc-cohort', uniqueValues(gmCohortRows, 'Cohort Name'), 'All Cohorts');
+  populateDropdown('select-bda-fc-cohort', uniqueValues(bdaCohortRows, 'Cohort Name'), 'All Cohorts');
   populateDropdown('select-tl-fm-month', uniqueValues(tlMonthRows, 'Month'), 'All Months');
   populateDropdown('select-gm-fm-month', uniqueValues(gmMonthRows, 'Month'), 'All Months');
+  populateDropdown('select-bda-fm-month', uniqueValues(bdaMonthRows, 'Month'), 'All Months');
 
   const tlFcRows = filterData(tlCohortRows, { 'Cohort Name': state.leaderCohortFilters['tl-fc'] });
   const tlFmRows = filterData(tlMonthRows, { Month: state.leaderMonthFilters['tl-fm'] });
   const gmFcRows = filterData(gmCohortRows, { 'Cohort Name': state.leaderCohortFilters['gm-fc'] });
   const gmFmRows = filterData(gmMonthRows, { Month: state.leaderMonthFilters['gm-fm'] });
+  const bdaFcRows = filterData(bdaCohortRows, { 'Cohort Name': state.leaderCohortFilters['bda-fc'] });
+  const bdaFmRows = filterData(bdaMonthRows, { Month: state.leaderMonthFilters['bda-fm'] });
 
   populateDropdown('select-tl-fc', uniqueValues(tlFcRows, ['TL Name', 'TL NAME']), 'All TLs');
   populateDropdown('select-tl-fm', uniqueValues(tlFmRows, ['TL Name', 'TL NAME']), 'All TLs');
   populateDropdown('select-gm-fc', uniqueValues(gmFcRows, ['GM Name', 'GM NAME', 'GM']), 'All GMs');
   populateDropdown('select-gm-fm', uniqueValues(gmFmRows, ['GM Name', 'GM NAME', 'GM']), 'All GMs');
+  populateDropdown('select-bda-fc', uniqueValues(bdaFcRows, ['BDA']), 'All BDAs');
+  populateDropdown('select-bda-fm', uniqueValues(bdaFmRows, ['BDA']), 'All BDAs');
 
   state.sectionCohortFilters.fc = document.getElementById('select-sec-fc-cohort')?.value || 'ALL';
   state.sectionMonthFilters.fm = document.getElementById('select-sec-fm-month')?.value || 'ALL';
   state.leaderCohortFilters['tl-fc'] = document.getElementById('select-tl-fc-cohort')?.value || 'ALL';
   state.leaderCohortFilters['gm-fc'] = document.getElementById('select-gm-fc-cohort')?.value || 'ALL';
+  state.leaderCohortFilters['bda-fc'] = document.getElementById('select-bda-fc-cohort')?.value || 'ALL';
   state.leaderMonthFilters['tl-fm'] = document.getElementById('select-tl-fm-month')?.value || 'ALL';
   state.leaderMonthFilters['gm-fm'] = document.getElementById('select-gm-fm-month')?.value || 'ALL';
+  state.leaderMonthFilters['bda-fm'] = document.getElementById('select-bda-fm-month')?.value || 'ALL';
   state.leaderFilters['tl-fc'] = document.getElementById('select-tl-fc')?.value || 'ALL';
   state.leaderFilters['tl-fm'] = document.getElementById('select-tl-fm')?.value || 'ALL';
   state.leaderFilters['gm-fc'] = document.getElementById('select-gm-fc')?.value || 'ALL';
   state.leaderFilters['gm-fm'] = document.getElementById('select-gm-fm')?.value || 'ALL';
+  state.leaderFilters['bda-fc'] = document.getElementById('select-bda-fc')?.value || 'ALL';
+  state.leaderFilters['bda-fm'] = document.getElementById('select-bda-fm')?.value || 'ALL';
 }
 
 function renderLeadershipList(chartKey) {
@@ -433,7 +505,7 @@ function setLoadingView() {
   ['card-fc-tgt', 'card-fc-ach', 'card-fc-pct', 'card-fc-revtgt', 'card-fc-revach', 'card-fc-revpct',
     'card-fm-tgt', 'card-fm-ach', 'card-fm-pct', 'card-fm-revtgt', 'card-fm-revach', 'card-fm-revpct']
     .forEach((id) => setText(id, 'Loading...'));
-  ['list-tl-fc', 'list-tl-fm', 'list-gm-fc', 'list-gm-fm'].forEach((id) => {
+  ['list-tl-fc', 'list-tl-fm', 'list-gm-fc', 'list-gm-fm', 'list-bda-fc', 'list-bda-fm'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);font-size:12px;">Loading...</div>';
   });
@@ -443,7 +515,7 @@ function setErrorView() {
   ['card-fc-tgt', 'card-fc-ach', 'card-fc-pct', 'card-fc-revtgt', 'card-fc-revach', 'card-fc-revpct',
     'card-fm-tgt', 'card-fm-ach', 'card-fm-pct', 'card-fm-revtgt', 'card-fm-revach', 'card-fm-revpct']
     .forEach((id) => setText(id, 'NA'));
-  ['list-tl-fc', 'list-tl-fm', 'list-gm-fc', 'list-gm-fm'].forEach((id) => {
+  ['list-tl-fc', 'list-tl-fm', 'list-gm-fc', 'list-gm-fm', 'list-bda-fc', 'list-bda-fm'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);font-size:12px;">Unable to load data</div>';
   });
@@ -461,6 +533,8 @@ function updateDashboard() {
   renderLeadershipList('tl-fm');
   renderLeadershipList('gm-fc');
   renderLeadershipList('gm-fm');
+  renderLeadershipList('bda-fc');
+  renderLeadershipList('bda-fm');
   renderLeadershipBanner();
 }
 
@@ -475,9 +549,14 @@ async function initializeDashboard() {
       fetchCSV(DATA_SOURCES.tlCohort),
       fetchCSV(DATA_SOURCES.tlMonthly),
       fetchCSV(DATA_SOURCES.gmCohort),
-      fetchCSV(DATA_SOURCES.gmMonthly)
+      fetchCSV(DATA_SOURCES.gmMonthly),
+      fetchCSV(DATA_SOURCES.bdaCohort),
+      fetchCSV(DATA_SOURCES.bdaMonthly)
     ]);
-    const keys = ['fullPaymentCohort', 'fullPaymentMonthly', 'tlCohort', 'tlMonthly', 'gmCohort', 'gmMonthly'];
+    const keys = [
+      'fullPaymentCohort', 'fullPaymentMonthly', 'tlCohort', 'tlMonthly',
+      'gmCohort', 'gmMonthly', 'bdaCohort', 'bdaMonthly'
+    ];
     let successCount = 0;
     settled.forEach((result, idx) => {
       const key = keys[idx];
