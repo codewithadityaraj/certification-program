@@ -530,6 +530,83 @@
         </div>
       </section>
 
+      <!-- ── SECTION 7: BDA WISE ANALYTICS ────────────── -->
+      <section class="dashboard-section">
+        <div class="section-header">
+          <h2 class="section-title">BDA Wise Analytics</h2>
+          <p class="section-subtitle">Performance breakdown at Business Development Associate level across cohort and monthly metrics</p>
+        </div>
+
+        <div class="leadership-grid">
+          <!-- Full Payment Cohort BDA Wise -->
+          <div class="chart-card-block">
+            <div class="chart-card-header">
+              <h3 class="chart-card-title">Full Payment Cohort BDA Wise</h3>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <select id="select-bda-fc-cohort" class="chart-card-select"
+                  onchange="onLeaderCohortFilterChange('bda-fc', this.value)">
+                  <option value="ALL">All Cohorts</option>
+                  <option value="2024-A">2024-A</option>
+                  <option value="2024-B">2024-B</option>
+                  <option value="2025-A">2025-A</option>
+                  <option value="2025-B">2025-B</option>
+                  <option value="2026-A">2026-A</option>
+                </select>
+                <select id="select-bda-fc" class="chart-card-select"
+                  onchange="onLeaderFilterChange('bda-fc', this.value)">
+                  <option value="ALL">All BDAs</option>
+                </select>
+                <select id="sort-bda-fc" class="chart-card-select" onchange="onLeaderSortChange('bda-fc', this.value)">
+                  <option value="ach-desc">Sort: High &rarr; Low</option>
+                  <option value="ach-asc">Sort: Low &rarr; High</option>
+                  <option value="name-asc">Sort: Name A-Z</option>
+                </select>
+              </div>
+            </div>
+            <div class="leader-list-header">
+              <span class="leader-list-header-name">Name</span>
+              <span class="leader-list-header-bar">Progress</span>
+              <span class="leader-list-header-val">Achievement</span>
+            </div>
+            <div id="list-bda-fc" class="leader-progress-list"></div>
+          </div>
+
+          <!-- Full Payment Monthly BDA Wise -->
+          <div class="chart-card-block">
+            <div class="chart-card-header">
+              <h3 class="chart-card-title">Full Payment Monthly BDA Wise</h3>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <select id="select-bda-fm-month" class="chart-card-select"
+                  onchange="onLeaderMonthFilterChange('bda-fm', this.value)">
+                  <option value="ALL">All Months</option>
+                  <option value="Jan">January</option>
+                  <option value="Feb">February</option>
+                  <option value="Mar">March</option>
+                  <option value="Apr">April</option>
+                  <option value="May">May</option>
+                  <option value="Jun">June</option>
+                </select>
+                <select id="select-bda-fm" class="chart-card-select"
+                  onchange="onLeaderFilterChange('bda-fm', this.value)">
+                  <option value="ALL">All BDAs</option>
+                </select>
+                <select id="sort-bda-fm" class="chart-card-select" onchange="onLeaderSortChange('bda-fm', this.value)">
+                  <option value="ach-desc">Sort: High &rarr; Low</option>
+                  <option value="ach-asc">Sort: Low &rarr; High</option>
+                  <option value="name-asc">Sort: Name A-Z</option>
+                </select>
+              </div>
+            </div>
+            <div class="leader-list-header">
+              <span class="leader-list-header-name">Name</span>
+              <span class="leader-list-header-bar">Progress</span>
+              <span class="leader-list-header-val">Achievement</span>
+            </div>
+            <div id="list-bda-fm" class="leader-progress-list"></div>
+          </div>
+        </div>
+      </section>
+
     </main>
 
   </div>
